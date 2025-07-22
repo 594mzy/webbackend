@@ -14,4 +14,10 @@ export class UserController {
         await this.userService.register(dto.username, dto.password);
         return true;
     }
+
+    @Post('/login')
+    async login(@Body() dto: RegisterDto): Promise<boolean> {
+        const result = await this.userService.login(dto.username, dto.password);
+        return result;
+    }
 }

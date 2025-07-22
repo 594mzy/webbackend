@@ -8,7 +8,7 @@ export class UserService {
 
   @InjectEntityModel(User)
   private userModel: Repository<User>;
-    // ...existing code...
+
     public async register(username: string, password: string): Promise<boolean> {
       try {
         const existingUser = await this.userModel.findOne({ where: { username } });
@@ -24,5 +24,15 @@ export class UserService {
         return false;
       }
     }
-  // ...existing
+
+    public async login(username: string, password: string): Promise<boolean> {
+      try {
+        const user = await this.userModel.findOne({ where: { username, password } });
+        return !!user; // 如果找到用户，则返回 true
+      } catch (err) {
+        // 可以根据需要记录日志或处理错误
+        console.error('登录失败:', err);
+        return false;
+      }
+    }
 }
