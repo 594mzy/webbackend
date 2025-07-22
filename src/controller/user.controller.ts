@@ -11,8 +11,8 @@ export class UserController {
 
     @Post('/register')
     async register(@Body() dto: RegisterDto): Promise<boolean> {
-        await this.userService.register(dto.username, dto.password);
-        return true;
+        const result = await this.userService.register(dto.username, dto.password);
+        return result;
     }
 
     @Post('/login')
