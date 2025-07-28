@@ -1,7 +1,7 @@
 import { BlindBoxItemEntity } from '../entity/blind-box-item.entity';
-export class CreateBlindBoxDto {
+export class BlindBoxDto {
   name: string;
   img: string;
-  left: number;
+  stock: number;
   items: Partial<BlindBoxItemEntity>[]; // 新增
 }

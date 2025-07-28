@@ -1,8 +1,13 @@
-import { Controller, Post, Get, Body, Inject, Param } from '@midwayjs/core';
+import { Controller, Post, Get, Body, Inject} from '@midwayjs/core';
 import { BlindBoxService } from '../service/blind-box.service';
 import { BlindBoxItemService } from '../service/blind-box-item.service';
 import { UserService } from '../service/user.service';
-import { CreateBlindBoxDto } from '../dto/blind-box.dto';
+import { BlindBoxDto } from '../dto/blind-box.dto';
+import { BlindBoxItemDto } from '../dto/blind-box-item.dto';
+import { UpdateBlindBoxDto } from '../dto/update-box.dto';
+import { UpdateBlindBoxItemDto } from '../dto/update-item.dto';
+import { DrawDto } from '../dto/draw.dto';
+import { IDDto } from '../dto/ID.dto';
 import { BlindBoxEntity } from '../entity/blind-box.entity';
 import { BlindBoxItemEntity } from '../entity/blind-box-item.entity';
 
@@ -34,7 +39,7 @@ export class BlindBoxController {
      */
     // 新增盲盒
     @Post('/admin/create')
-    async createBlindBox(@Body() dto: CreateBlindBoxDto): Promise<BlindBoxEntity> {
+    async createBlindBox(@Body() dto: BlindBoxDto): Promise<BlindBoxEntity> {
         return this.blindBoxService.createStock(dto);
     }
 
@@ -45,15 +50,15 @@ export class BlindBoxController {
     }
 
     // 更新盲盒
-    @Post('/admin/update/:id')
-    async updateBlindBox(@Param('id') id: number, @Body() dto: Partial<BlindBoxEntity>): Promise<BlindBoxEntity> {
-        return this.blindBoxService.updateBaseInfo(id, dto);
+    @Post('/admin/update')
+    async updateBlindBox(@Body() dto: UpdateBlindBoxDto): Promise<BlindBoxEntity> {
+        return this.blindBoxService.updateBaseInfo(dto.id, dto);
     }
 
     // 删除盲盒
-    @Post('/admin/delete/:id')
-    async deleteBlindBox(@Param('id') id: number): Promise<boolean> {
-        return this.blindBoxService.deleteStock(id);
+    @Post('/admin/delete')
+    async deleteBlindBox(@Body() dto: IDDto): Promise<boolean> {
+        return this.blindBoxService.deleteStock(dto.ID);
     }
 
     /**
@@ -61,33 +66,33 @@ export class BlindBoxController {
      */
     // 新增物品
     @Post('/admin/item/create')
-    async createItem(@Body() dto: Partial<BlindBoxItemEntity>): Promise<BlindBoxItemEntity> {
+    async createItem(@Body() dto: BlindBoxItemDto): Promise<BlindBoxItemEntity> {
         return this.blindBoxItemService.create(dto);
     }
 
     // 查询某个盲盒下所有物品
-    @Get('/admin/item/list/:boxId')
-    async listItems(@Param('boxId') boxId: number): Promise<BlindBoxItemEntity[]> {
-        return this.blindBoxItemService.findByBoxId(boxId);
+    @Post('/admin/item/list')
+    async listItems(@Body() dto: IDDto): Promise<BlindBoxItemEntity[]> {
+        return this.blindBoxItemService.findByBoxId(dto.ID);
     }
 
     // 更新物品
-    @Post('/admin/item/update/:id')
-    async updateItem(@Param('id') id: number, @Body() dto: Partial<BlindBoxItemEntity>): Promise<BlindBoxItemEntity> {
-        return this.blindBoxItemService.update(id, dto);
+    @Post('/admin/item/update')
+    async updateItem(@Body() dto: UpdateBlindBoxItemDto): Promise<BlindBoxItemEntity> {  
+        return this.blindBoxItemService.update(dto.id, dto);
     }
 
     // 删除物品
-    @Post('/admin/item/delete/:id')
-    async deleteItem(@Param('id') id: number): Promise<boolean> {
-        return this.blindBoxItemService.delete(id);
+    @Post('/admin/item/delete')
+    async deleteItem(@Body() dto: IDDto): Promise<boolean> {
+        return this.blindBoxItemService.delete(dto.ID);
     }
 
     /**
      * 4. 用户抽取盲盒（带概率、互斥锁）
      */
-    @Post('/draw/:boxId')
-    async drawBlindBox(@Param('boxId') boxId: number, @Body('userId') userId: number): Promise<{ item?: BlindBoxItemEntity; msg: string }> {
+    @Post('/draw')
+    async drawBlindBox(@Body() dto: DrawDto): Promise<{ item?: BlindBoxItemEntity; msg: string }> {
         // 简单互斥锁，防止并发抽取
         if (drawLock) {
             return { msg: '当前有用户正在抽取，请稍后再试' };
@@ -95,7 +100,7 @@ export class BlindBoxController {
         drawLock = true;
         try {
             // 查询盲盒所有物品
-            const items = await this.blindBoxItemService.findByBoxId(boxId);
+            const items = await this.blindBoxItemService.findByBoxId(dto.boxID);
             // 过滤库存大于0的物品
             const availableItems = items.filter(item => item.stock > 0);
             if (availableItems.length === 0) {

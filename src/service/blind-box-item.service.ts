@@ -3,6 +3,8 @@ import { Provide } from '@midwayjs/core';
 import { InjectEntityModel } from '@midwayjs/typeorm';
 import { Repository } from 'typeorm';
 import { BlindBoxItemEntity } from '../entity/blind-box-item.entity';
+import { BlindBoxItemDto } from '../dto/blind-box-item.dto';
+import { UpdateBlindBoxItemDto } from '../dto/update-item.dto';
 
 @Provide()
 export class BlindBoxItemService {
@@ -24,12 +26,12 @@ export class BlindBoxItemService {
   }
 
   /* ---------- 新增/修改/删除物品 ---------- */
-  async create(data: Partial<BlindBoxItemEntity>) {
+  async create(data: BlindBoxItemDto) {
     const item = this.itemRepo.create(data);
     return this.itemRepo.save(item);
   }
 
-  async update(id: number, data: Partial<BlindBoxItemEntity>) {
+  async update(id: number, data: UpdateBlindBoxItemDto) {
     await this.itemRepo.update(id, data);
     return this.itemRepo.findOneBy({ id });
   }
