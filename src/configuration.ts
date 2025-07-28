@@ -32,6 +32,7 @@ export class MainConfiguration {
     this.app.useMiddleware([ReportMiddleware]);
     // add filter
     // this.app.useFilter([NotFoundFilter, DefaultErrorFilter]);
+    this.app.use(require('koa-static')(join(__dirname, '../public')));
     this.app.use(cors()); // 允许所有跨域
   }
 }

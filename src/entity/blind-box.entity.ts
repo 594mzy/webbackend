@@ -13,6 +13,9 @@ export class BlindBoxEntity {
   @Column({ type: 'text', nullable: true })
   img: string;
 
+  @Column({default: 0 })
+  stock: number; // 盲盒库存数量
+
   @CreateDateColumn()
   createdAt: Date;
 

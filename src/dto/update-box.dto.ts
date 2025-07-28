@@ -10,5 +10,7 @@ export class UpdateBlindBoxDto {
 
   img?: string; // 可选，盲盒图片
 
+  stock?: number; // 可选，盲盒库存数量
+
   items?: BlindBoxItemDto[]; // 可选，盲盒下的物品列表
 }
