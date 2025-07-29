@@ -49,6 +49,12 @@ export class BlindBoxController {
         return this.blindBoxService.boxRepo.find({ relations: ['items'] });
     }
 
+    // 查询某个盲盒下所有物品
+    @Post('/admin/list')
+    async listBoxAndItems(@Body() dto: IDDto): Promise<BlindBoxEntity> {
+        return this.blindBoxService.findOneStock(dto.ID);
+    }
+
     // 更新盲盒
     @Post('/admin/update')
     async updateBlindBox(@Body() dto: UpdateBlindBoxDto): Promise<BlindBoxEntity> {
@@ -99,31 +105,9 @@ export class BlindBoxController {
         }
         drawLock = true;
         try {
-            // 查询盲盒所有物品
-            const items = await this.blindBoxItemService.findByBoxId(dto.boxID);
-            // 过滤库存大于0的物品
-            const availableItems = items.filter(item => item.stock > 0);
-            if (availableItems.length === 0) {
-                return { msg: '该盲盒已无库存' };
-            }
-            // 按概率抽取
-            const rand = Math.random();
-            let sum = 0;
-            let selected: BlindBoxItemEntity | null = null;
-            for (const item of availableItems) {
-                sum += item.probability;
-                if (rand <= sum) {
-                    selected = item;
-                    break;
-                }
-            }
-            // 如果概率未覆盖到1，兜底抽最后一个
-            if (!selected) selected = availableItems[availableItems.length - 1];
-
-            // 扣减库存（原子操作）
-            await this.blindBoxItemService.decrementStock(selected.id, 1);
-
-            return { item: selected, msg: '抽取成功' };
+            // 调用 service 层的抽取逻辑
+            const result = await this.blindBoxItemService.drawItemFromBox(dto.boxID, dto.userID);
+            return result;
         } catch (err) {
             return { msg: '抽取失败，请重试' };
         } finally {

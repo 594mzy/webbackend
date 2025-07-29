@@ -29,6 +29,15 @@ export class BlindBoxService {
     return this.findOneStock(id);
   }
 
+  async decrementBoxStock(id: number, count: number) {
+    const box = await this.findOneStock(id);
+    if (!box || box.stock < count) {
+      throw new Error('库存不足');
+    }
+    box.stock -= count;
+    return this.boxRepo.save(box);
+  }
+
   async deleteStock(id: number) {
     // 先删除所有关联的盲盒物品
     await this.boxRepo.manager.delete('blind_box_item', { blindBoxId: id });
