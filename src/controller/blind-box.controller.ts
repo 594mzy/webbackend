@@ -1,7 +1,8 @@
-import { Controller, Post, Get, Body, Inject} from '@midwayjs/core';
+import { Controller, Post, Get, Body, Inject } from '@midwayjs/core';
 import { BlindBoxService } from '../service/blind-box.service';
 import { BlindBoxItemService } from '../service/blind-box-item.service';
 import { UserService } from '../service/user.service';
+import { OrderService } from '../service/order.service';
 import { BlindBoxDto } from '../dto/blind-box.dto';
 import { BlindBoxItemDto } from '../dto/blind-box-item.dto';
 import { UpdateBlindBoxDto } from '../dto/update-box.dto';
@@ -24,6 +25,9 @@ export class BlindBoxController {
 
     @Inject()
     userService: UserService;
+
+    @Inject()
+    orderService: OrderService;
 
     /**
      * 1. 获取盲盒列表（前端渲染用）
@@ -84,7 +88,7 @@ export class BlindBoxController {
 
     // 更新物品
     @Post('/admin/item/update')
-    async updateItem(@Body() dto: UpdateBlindBoxItemDto): Promise<BlindBoxItemEntity> {  
+    async updateItem(@Body() dto: UpdateBlindBoxItemDto): Promise<BlindBoxItemEntity> {
         return this.blindBoxItemService.update(dto.id, dto);
     }
 
@@ -106,7 +110,15 @@ export class BlindBoxController {
         drawLock = true;
         try {
             // 调用 service 层的抽取逻辑
-            const result = await this.blindBoxItemService.drawItemFromBox(dto.boxID, dto.userID);
+            const result = await this.blindBoxItemService.drawItemFromBox(dto.boxID, dto.username);
+            // 抽取成功后创建订单
+            if (result.item) {
+                await this.orderService.create({
+                    username: dto.username,
+                    item: result.item.itemName,
+                    createdAt: new Date()
+                });
+            }
             return result;
         } catch (err) {
             return { msg: '抽取失败，请重试' };

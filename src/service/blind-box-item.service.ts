@@ -44,7 +44,7 @@ export class BlindBoxItemService {
     const res = await this.itemRepo.delete(id);
     return res.affected !== 0;
   }
-  async drawItemFromBox(boxId: number, userId?: number): Promise<{ item?: BlindBoxItemEntity; msg: string }> {
+  async drawItemFromBox(boxId: number, username: string): Promise<{ item?: BlindBoxItemEntity; msg: string }> {
     // 查询盲盒所有物品
     const items = await this.findByBoxId(boxId);
     // 过滤库存大于0的物品
