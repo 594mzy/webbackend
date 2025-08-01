@@ -6,8 +6,8 @@ import * as swagger from '@midwayjs/swagger';
 import * as orm from '@midwayjs/typeorm';
 import * as cors from '@koa/cors';
 import * as staticFile from '@midwayjs/static-file';
-import * as path from 'path';
-import * as fs from 'fs';
+// import * as path from 'path';
+// import * as fs from 'fs';
 // import { DefaultErrorFilter } from './filter/default.filter';
 // import { NotFoundFilter } from './filter/notfound.filter';
 import { ReportMiddleware } from './middleware/report.middleware';
@@ -44,18 +44,18 @@ export class MainConfiguration {
     // console.log('✅ 应用启动成功');
     // console.log('静态资源目录（运行时）：', path.resolve(process.cwd(), 'build/public'));
     // SPA 路由兜底处理
-    this.app.use(async (ctx, next) => {
-      await next();
-      // 只处理 GET 请求，且不是静态资源和 API 路径
-      if (
-        ctx.status === 404 &&
-        ctx.method === 'GET' &&
-        !ctx.path.startsWith('/api') &&
-        !ctx.path.match(/\.(js|css|png|jpg|jpeg|svg|ico|json)$/)
-      ) {
-        ctx.type = 'html';
-        ctx.body = fs.createReadStream(path.join(process.cwd(), 'public', 'index.html'));
-      }
-    });
+    // this.app.use(async (ctx, next) => {
+    //   await next();
+    //   // 只处理 GET 请求，且不是静态资源和 API 路径
+    //   if (
+    //     ctx.status === 404 &&
+    //     ctx.method === 'GET' &&
+    //     !ctx.path.startsWith('/api') &&
+    //     !ctx.path.match(/\.(js|css|png|jpg|jpeg|svg|ico|json)$/)
+    //   ) {
+    //     ctx.type = 'html';
+    //     ctx.body = fs.createReadStream(path.join(process.cwd(), 'public', 'index.html'));
+    //   }
+    // });
   }
 }
