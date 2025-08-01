@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Inject } from '@midwayjs/core';
+import { Controller, Post, Body, Inject } from '@midwayjs/core';
 import { OrderService } from '../service/order.service';
 import { OrderDto } from '../dto/order.dto';
 import { UsernameDto } from '../dto/username.dto';
@@ -9,7 +9,7 @@ export class OrderController {
   orderService: OrderService;
 
   // 根据用户名查询订单
-  @Get('/list')
+  @Post('/list')
   async getOrdersByUsername(@Body() dto: UsernameDto) {
     return this.orderService.findByUsername(dto.username);
   }

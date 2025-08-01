@@ -8,9 +8,8 @@ export class Order {
     @Column({
         type: 'varchar',
         length: 50,
-        unique: true,
         nullable: false,
-        comment: 'Unique username',
+        comment: 'username',
     })
     username: string;
 
